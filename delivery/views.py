@@ -100,3 +100,57 @@ def restaurant_menu(request, restaurant_id):
         'restaurant': restaurant,
         'menu_items': menu_items,
     })
+
+def update_restaurant_page(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    return render(request, 'delivery/update_restaurant_page.html', {"restaurant": restaurant})
+
+# Update Restaurant
+def update_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+
+    if request.method == 'POST':
+        restaurant.name = request.POST.get('name')
+        restaurant.picture = request.POST.get('picture')
+        restaurant.cuisine = request.POST.get('cuisine')
+        restaurant.rating = request.POST.get('rating')
+        restaurant.save()
+
+        restaurants = Restaurant.objects.all()
+        return render(request, 'delivery/show_restaurants.html', {"restaurants": restaurants})
+
+# Delete Restaurant
+def delete_restaurant(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    restaurant.delete()
+
+    restaurants = Restaurant.objects.all()
+    return render(request,'delivery/show_restaurants.html', {"restaurants": restaurants})
+
+# Update Menu item Page
+def update_menuItem_page(request, menuItem_id):
+    menuItem = get_object_or_404(MenuItem, id=menuItem_id)
+    return render(request, 'delivery/update_menuItem_page.html', {"item": menuItem})
+# update MenuItem
+def update_menuItem(request, menuItem_id):
+    menuItem = get_object_or_404(MenuItem, id=menuItem_id)
+
+    if request.method == 'POST':
+        menuItem.name = request.POST.get('name')
+        menuItem.description = request.POST.get('description')
+        menuItem.price = request.POST.get('price')
+        menuItem.is_veg = request.POST.get('is_veg') == 'on'
+        menuItem.picture = request.POST.get('picture')
+
+        menuItem.save()
+
+        restaurants = Restaurant.objects.all()
+        return render(request, 'delivery/show_restaurants.html', {"restaurants": restaurants})
+    
+# Delete menuItem   
+def delete_menuItem(request, menuItem_id):
+    menuItem = get_object_or_404(MenuItem, id=menuItem_id)
+    menuItem.delete()
+
+    restaurants = Restaurant.objects.all()
+    return render(request, 'delivery/show_restaurants.html', {"restaurants": restaurants})
