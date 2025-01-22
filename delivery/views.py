@@ -20,12 +20,15 @@ def handle_login(request):
         password = request.POST.get('password')
       
         try:
-            cust = Customer.objects.get(username = username, password = password)
-            return render(request,'delivery/success.html')
-        except:
+            # Check if the customer exists
+            Customer.objects.get(username = username, password = password)
+            if username == 'admin':
+                return render(request,'delivery/success.html')
+            else:
+                return render(request,'delivery/customer_home.html')
+        except Customer.DoesNotExist:
             return render(request,'delivery/fail.html')
-    else:
-        return HttpResponse("Invalid request")
+    return HttpResponse("Invalid request")
     
 def handle_signup(request):
     if request.method == 'POST':
