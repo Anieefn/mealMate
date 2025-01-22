@@ -158,7 +158,7 @@ def delete_menuItem(request, menuItem_id):
 
     restaurants = Restaurant.objects.all()
     return render(request, 'delivery/show_restaurants.html', {"restaurants": restaurants})
-
+# to show mwnu to the customer
 def customer_menu(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     # Fetch all menu items for this restaurant
