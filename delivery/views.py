@@ -25,7 +25,8 @@ def handle_login(request):
             if username == 'admin':
                 return render(request,'delivery/success.html')
             else:
-                return render(request,'delivery/customer_home.html')
+                restaurants = Restaurant.objects.all()
+                return render(request,'delivery/customer_home.html', {"restaurants":restaurants})
         except Customer.DoesNotExist:
             return render(request,'delivery/fail.html')
     return HttpResponse("Invalid request")
@@ -157,3 +158,13 @@ def delete_menuItem(request, menuItem_id):
 
     restaurants = Restaurant.objects.all()
     return render(request, 'delivery/show_restaurants.html', {"restaurants": restaurants})
+
+def customer_menu(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    # Fetch all menu items for this restaurant
+    menu_items = restaurant.menu_items.all()
+
+    return render(request, 'delivery/customer_menu.html', {
+        'restaurant': restaurant,
+        'menu_items': menu_items,
+    })
