@@ -158,9 +158,14 @@ def delete_menuItem(request, menuItem_id):
 
     restaurants = Restaurant.objects.all()
     return render(request, 'delivery/show_restaurants.html', {"restaurants": restaurants})
+<<<<<<< HEAD
 
 # To show menu to the customer
 def customer_menu(request, restaurant_id, username):
+=======
+# to show mwnu to the customer
+def customer_menu(request, restaurant_id):
+>>>>>>> 0e20b1596c4b145e209dbfc726a612bdeacdaf37
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     # Fetch all menu items for this restaurant
     menu_items = restaurant.menu_items.all()
@@ -168,6 +173,7 @@ def customer_menu(request, restaurant_id, username):
     return render(request, 'delivery/customer_menu.html', {
         'restaurant': restaurant,
         'menu_items': menu_items,
+<<<<<<< HEAD
         'username':username
     })
 
@@ -183,3 +189,6 @@ def add_to_cart(request, username, item_id):
 
 def show_cart_page(request, username):
     return render(request, 'delivery/cart.html')
+=======
+    })
+>>>>>>> 0e20b1596c4b145e209dbfc726a612bdeacdaf37
