@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from delivery.models import Customer, Restaurant, MenuItem
+from delivery.models import Customer, Restaurant, MenuItem,Cart
 
 # Create your views here.
 def index(request):
@@ -26,7 +26,7 @@ def handle_login(request):
                 return render(request,'delivery/success.html')
             else:
                 restaurants = Restaurant.objects.all()
-                return render(request,'delivery/customer_home.html', {"restaurants":restaurants})
+                return render(request,'delivery/customer_home.html', {"restaurants":restaurants, "username":username})
         except Customer.DoesNotExist:
             return render(request,'delivery/fail.html')
     return HttpResponse("Invalid request")
@@ -159,7 +159,8 @@ def delete_menuItem(request, menuItem_id):
     restaurants = Restaurant.objects.all()
     return render(request, 'delivery/show_restaurants.html', {"restaurants": restaurants})
 
-def customer_menu(request, restaurant_id):
+# To show menu to the customer
+def customer_menu(request, restaurant_id, username):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     # Fetch all menu items for this restaurant
     menu_items = restaurant.menu_items.all()
@@ -167,4 +168,18 @@ def customer_menu(request, restaurant_id):
     return render(request, 'delivery/customer_menu.html', {
         'restaurant': restaurant,
         'menu_items': menu_items,
+        'username':username
     })
+
+
+
+def add_to_cart(request, username, item_id):
+    customer = get_object_or_404(Customer, username=username)
+    item = get_object_or_404(MenuItem, id=item_id)
+
+    cart, created = Cart.objects.get_or_create(customer = customer)
+
+    cart.items.add(item)
+
+def show_cart_page(request, username):
+    return render(request, 'delivery/cart.html')

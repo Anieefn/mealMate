@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif; /* Standard font */
     margin: 0;
     padding: 0;
-    background-color: #F7E4E0; /* Light background color */
+    background-color: #f7e4e0; /* Light background color */
     color: #333; /* Neutral text color for good readability */
     display: flex;
     flex-direction: column;
@@ -127,4 +127,5 @@ h1, h2, h3, table, form {
 a, button {
     margin: 10px;
 }
+
 

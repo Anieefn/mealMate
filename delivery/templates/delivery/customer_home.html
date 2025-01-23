@@ -8,8 +8,10 @@
     <title>My Favorite Restaurants</title>
 </head>
 <body>
+        <img src="{% static 'delivery/images/logo.png' %}" alt="Logo" width="15%"></li>
+        <h3>Welcome {{ username }}</h3>
+        <a href="{% url 'show_cart_page' %}"> view Cart </a>
     <h1>My Favorite Restaurants</h1>
-    <a href="{% url 'add_restaurant' %}">Add a Restaurant</a>
     <table border="1">
         <thead>
             <tr>
@@ -30,7 +32,7 @@
                 <td>{{ restaurant.cuisine }}</td>
                 <td>{{ restaurant.rating }}/5</td>
                 <td>
-                    <a href="{% url 'customer_menu' restaurant.id %}">View Menu</a>
+                    <a href="{% url 'customer_menu' restaurant.id username %}">View Menu</a>
                 </td>
             </tr>
             {% endfor %}

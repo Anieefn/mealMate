@@ -43,13 +43,6 @@
                         Non-Veg
                     {% endif %}
                 </td>
-                <td>
-                    <form method="POST" action="{% url 'add_to_cart' item.id username%}">
-                        {% csrf_token %}
-                        <button type="submit" >Add to cart</button>
-                    </form>
-                </td>
-                
             </tr>
             {% empty %}
             <tr>
