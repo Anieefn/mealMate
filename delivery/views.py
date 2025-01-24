@@ -1,6 +1,9 @@
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from delivery.models import Customer, Restaurant, MenuItem,Cart
+import razorpay
+from django.conf import settings
 
 # Create your views here.
 def index(request):
@@ -173,13 +176,87 @@ def customer_menu(request, restaurant_id, username):
 
 
 
-def add_to_cart(request, username, item_id):
+# Add items to cart
+def add_to_cart(request, item_id, username):
+    # Check user and item
     customer = get_object_or_404(Customer, username=username)
     item = get_object_or_404(MenuItem, id=item_id)
 
-    cart, created = Cart.objects.get_or_create(customer = customer)
+    # Get or create a cart for the customer
+    cart, created = Cart.objects.get_or_create(customer=customer)
 
+    # Add the item to the cart
     cart.items.add(item)
 
+    # Add a success message
+    messages.success(request, f"{item.name} added to your cart!")
+
+    # Stay on the same menu page
+    return redirect('customer_menu', restaurant_id=item.restaurant.id, username=username)
 def show_cart_page(request, username):
-    return render(request, 'delivery/cart.html', username)
+    #Fetch the customer cart
+    customer = get_object_or_404(Customer, username=username)
+    cart = Cart.objects.filter(customer=customer).first()
+
+    #Fetch cart items and total price
+    items = cart.items.all() if cart else []
+    total_price = cart.total_price() if cart else 0
+    return render(request, 'delivery/cart.html', {
+        'items':items,
+        'total_price':total_price,
+        'username':username
+    })
+
+def checkout(request, username):
+    # Fetch customer and their cart
+    customer = get_object_or_404(Customer, username=username)
+    cart = Cart.objects.filter(customer=customer).first()
+    cart_items = cart.items.all() if cart else []
+    total_price = cart.total_price() if cart else 0
+
+    if total_price == 0:
+        return render(request, 'delivery/checkout.html', {
+            'error': 'Your cart is empty!',
+        })
+
+    # Initialize Razorpay client
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    # Create Razorpay order
+    order_data = {
+        'amount': int(total_price * 100),  # Amount in paisa
+        'currency': 'INR',
+        'payment_capture': '1',  # Automatically capture payment
+    }
+    order = client.order.create(data=order_data)
+
+    # Pass the order details to the frontend
+    return render(request, 'delivery/checkout.html', {
+        'username': username,
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        'order_id': order['id'],  # Razorpay order ID
+        'amount': total_price,
+    })
+
+
+# Orders Page
+def orders(request, username):
+    customer = get_object_or_404(Customer, username=username)
+    cart = Cart.objects.filter(customer=customer).first()
+
+    # Fetch cart items and total price before clearing the cart
+    cart_items = cart.items.all() if cart else []
+    total_price = cart.total_price() if cart else 0
+
+    # Clear the cart after fetching its details
+    if cart:
+        cart.items.clear()
+
+    return render(request, 'delivery/orders.html', {
+        'username': username,
+        'customer': customer,
+        'cart_items': cart_items,
+        'total_price': total_price,
+    })

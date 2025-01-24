@@ -10,7 +10,7 @@
 <body>
         <img src="{% static 'delivery/images/logo.png' %}" alt="Logo" width="15%"></li>
         <h3>Welcome {{ username }}</h3>
-        <a href="{% url 'show_cart_page' %}"> view Cart </a>
+        <a href="{% url 'show_cart_page' username %}"> view Cart </a>
     <h1>My Favorite Restaurants</h1>
     <table border="1">
         <thead>
